@@ -212,7 +212,12 @@ def main(args):
             else:
                 save_pred = os.path.basename(image_file) + "\t" + json.dumps(
                     res, ensure_ascii=False) + "\n"
-            save_results.append(save_pred)
+            with open(
+                    os.path.join(draw_img_save_dir,
+                                 os.path.basename(image_file)[:-4]+".txt"),
+                                 'w',
+                encoding='utf-8') as f:
+                f.writelines(save_pred)
 
             if is_visualize:
                 image = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
@@ -236,22 +241,19 @@ def main(args):
                     save_file = image_file
                 cv2.imwrite(
                     os.path.join(draw_img_save_dir,
-                                 os.path.basename(save_file)),
+                                 os.path.basename(save_file)[:-4]+".jpg"),
                     draw_img[:, :, ::-1])
                 logger.debug("The visualized image saved in {}".format(
                     os.path.join(draw_img_save_dir, os.path.basename(
                         save_file))))
+                
 
     logger.info("The predict total time is {}".format(time.time() - _st))
     if args.benchmark:
         text_sys.text_detector.autolog.report()
         text_sys.text_recognizer.autolog.report()
 
-    with open(
-            os.path.join(draw_img_save_dir, "system_results.txt"),
-            'w',
-            encoding='utf-8') as f:
-        f.writelines(save_results)
+
 
 
 if __name__ == "__main__":
